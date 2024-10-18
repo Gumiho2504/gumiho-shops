@@ -1,0 +1,1 @@
+# gumiho-shops

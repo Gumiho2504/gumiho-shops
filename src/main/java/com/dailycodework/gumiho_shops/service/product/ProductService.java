@@ -81,8 +81,8 @@ public class ProductService implements IProductService {
         existingProduct.setDescription(request.getDescription());
 
         Category category = categoryRepository.findByName(request.getCategory().getName());
-
         existingProduct.setCategory(category);
+
         return existingProduct;
     }
 
@@ -98,12 +98,12 @@ public class ProductService implements IProductService {
 
     @Override
     public List<Product> getProductsByBrand(String brand) {
-        return productRepository.findByBrandName(brand);
+        return productRepository.findByBrand(brand);
     }
 
     @Override
     public List<Product> getProductsByCategoryAndBrand(String category, String brand) {
-        return productRepository.findByCategoryAndBrandName(category, brand);
+        return productRepository.findByCategoryNameAndBrand(category, brand);
     }
 
     @Override

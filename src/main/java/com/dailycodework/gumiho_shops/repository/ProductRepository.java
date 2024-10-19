@@ -3,20 +3,23 @@ package com.dailycodework.gumiho_shops.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 
+import com.dailycodework.gumiho_shops.model.Category;
 import com.dailycodework.gumiho_shops.model.Product;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    List<Product> findByCategory(Long categoryId);
+    List<Product> findByCategoryId(Long categoryId);
 
     List<Product> findByCategoryName(String category);
 
-    List<Product> findByBrandName(String brand);
+    List<Product> findByBrand(String brand);
 
-    List<Product> findByCategoryAndBrandName(String category, String brand);
+    List<Product> findByCategoryNameAndBrand(String category, String brand);
 
     List<Product> findByName(String name);
 

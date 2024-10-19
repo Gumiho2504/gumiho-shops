@@ -2,6 +2,8 @@ package com.dailycodework.gumiho_shops.service.category;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dailycodework.gumiho_shops.exception.AlreadyExistingException;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CategoryService implements ICategoryService {
 
+    @Autowired
     private final CategoryRepository categoryRepository;
 
     @Override
@@ -35,7 +38,7 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public Category addCategory(Category category) {
-        return Optional.of(category).filter(c -> !categoryRepository.existingByName(c.getName()))
+        return Optional.of(category).filter(c -> !categoryRepository.existsByName(c.getName()))
                 .map(categoryRepository::save)
                 .orElseThrow(
                         () -> {

@@ -32,7 +32,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestController
 @RequestMapping("${api.prefix}/images")
 public class ImageController {
-    private IImageService imageService;
+    private final IImageService imageService;
 
     @PostMapping("/upload")
     public ResponseEntity<ApiResponse> saveImages(

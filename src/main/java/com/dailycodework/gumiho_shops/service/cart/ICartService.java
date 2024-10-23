@@ -1,6 +1,8 @@
 package com.dailycodework.gumiho_shops.service.cart;
 
 import com.dailycodework.gumiho_shops.model.Cart;
+import com.dailycodework.gumiho_shops.model.User;
+
 import java.math.BigDecimal;
 
 public interface ICartService {
@@ -10,5 +12,7 @@ public interface ICartService {
 
     BigDecimal getTotalPrice(Long id);
 
-    Long initializeNewCart();
+    Cart initializeNewCart(User user);
+
+    Cart getCartByUserId(Long userId);
 }

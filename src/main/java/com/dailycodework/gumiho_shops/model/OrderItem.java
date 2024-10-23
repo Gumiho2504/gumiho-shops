@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,26 +20,25 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class CartItem {
+public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private BigDecimal price;
     private int quantity;
 
-    private BigDecimal unitPrice;
-    private BigDecimal totalPrice;
-
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
-
-    public void setTotalPrice() {
-        this.totalPrice = this.unitPrice.multiply(new BigDecimal(quantity));
+    public OrderItem(Order order, Product product, BigDecimal price, int quantity) {
+        this.order = order;
+        this.product = product;
+        this.price = price;
+        this.quantity = quantity;
     }
 
 }

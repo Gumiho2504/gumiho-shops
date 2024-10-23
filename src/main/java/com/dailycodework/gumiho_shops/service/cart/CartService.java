@@ -7,10 +7,14 @@ import org.springframework.stereotype.Service;
 import com.dailycodework.gumiho_shops.exception.ResourceNotFoundException;
 import com.dailycodework.gumiho_shops.model.Cart;
 import com.dailycodework.gumiho_shops.model.CartItem;
+import com.dailycodework.gumiho_shops.model.User;
 import com.dailycodework.gumiho_shops.repository.CartItemRepository;
 import com.dailycodework.gumiho_shops.repository.CartRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
@@ -30,11 +34,13 @@ public class CartService implements ICartService {
         return cartRepository.save(cart);
     }
 
+    @Transactional
     @Override
     public void cleanCart(Long id) {
         Cart cart = getCartById(id);
         cartItemRepository.deleteAllByCartId(id);
         cart.getItems().clear();
+        cart.setUser(null);
         cartRepository.deleteById(id);
     }
 
@@ -46,11 +52,19 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public Long initializeNewCart() {
-        Cart newCart = new Cart();
-        Long newCartId = cartIdGenerator.incrementAndGet();
-        newCart.setId(newCartId);
-        return cartRepository.save(newCart).getId();
+    public Cart initializeNewCart(User user) {
+        return Optional.ofNullable(getCartByUserId(user.getId()))
+                .orElseGet(
+                        () -> {
+                            Cart cart = new Cart();
+                            cart.setUser(user);
+                            return cartRepository.save(cart);
+                        });
+    }
+
+    @Override
+    public Cart getCartByUserId(Long userId) {
+        return cartRepository.findByUserId(userId);
     }
 
 }

@@ -11,9 +11,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dailycodework.gumiho_shops.exception.ResourceNotFoundException;
+import com.dailycodework.gumiho_shops.model.Cart;
+import com.dailycodework.gumiho_shops.model.User;
 import com.dailycodework.gumiho_shops.response.ApiResponse;
 import com.dailycodework.gumiho_shops.service.cart.ICartItemService;
 import com.dailycodework.gumiho_shops.service.cart.ICartService;
+import com.dailycodework.gumiho_shops.service.user.IUserService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,16 +27,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class CartItemController {
     private final ICartItemService cartItemService;
     private final ICartService cartService;
+    private final IUserService userService;
 
     @PostMapping("item/add")
-    public ResponseEntity<ApiResponse> addItemToTheCart(@RequestParam(required = false) Long cartId,
+    public ResponseEntity<ApiResponse> addItemToTheCart(
             @RequestParam Long productId,
             @RequestParam Integer quantity) {
         try {
-            if (cartId == null) {
-                cartService.initializeNewCart();
-            }
-            cartItemService.addItemToCart(cartId, productId, quantity);
+            User user = userService.getUserById(5L);
+            Cart cart = cartService.initializeNewCart(user);
+
+            cartItemService.addItemToCart(cart.getId(), productId, quantity);
             return ResponseEntity.ok(new ApiResponse("Add item success", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));

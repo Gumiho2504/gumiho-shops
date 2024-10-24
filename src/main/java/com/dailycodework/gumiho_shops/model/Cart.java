@@ -1,6 +1,7 @@
 package com.dailycodework.gumiho_shops.model;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,7 +31,7 @@ public class Cart {
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CartItem> items;
+    private Set<CartItem> items = new HashSet<>();
 
     @OneToOne
     @JoinColumn(name = "user_id")
@@ -56,6 +57,15 @@ public class Cart {
             }
             return unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
         }).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public void clearCart() {
+
+        for (CartItem item : items) {
+            item.setCart(null);
+        }
+        items.clear();
+        totalAmount = BigDecimal.ZERO;
     }
 
 }

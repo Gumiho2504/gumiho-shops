@@ -3,6 +3,9 @@ package com.dailycodework.gumiho_shops.service.user;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.dailycodework.gumiho_shops.dto.UserDto;
@@ -21,6 +24,7 @@ public class UserService implements IUserService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User getUserById(Long userId) {
@@ -35,7 +39,7 @@ public class UserService implements IUserService {
                 .map(rq -> {
                     User user = new User();
                     user.setEmail(rq.getEmail());
-                    user.setPassword(rq.getPassword());
+                    user.setPassword(passwordEncoder.encode(rq.getPassword()));
                     user.setFirstName(rq.getFirstName());
                     user.setLastName(rq.getLastName());
                     return userRepository.save(user);
@@ -65,6 +69,13 @@ public class UserService implements IUserService {
     @Override
     public UserDto toUserDto(User user) {
         return modelMapper.map(user, UserDto.class);
+    }
+
+    @Override
+    public User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return userRepository.findByEmail(email);
     }
 
 }

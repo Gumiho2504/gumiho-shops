@@ -39,8 +39,8 @@ public class CartService implements ICartService {
     public void cleanCart(Long id) {
         Cart cart = getCartById(id);
         cartItemRepository.deleteAllByCartId(id);
-        cart.getItems().clear();
-        cart.setUser(null);
+        cart.clearCart();
+        // cart.setUser(null);
         cartRepository.deleteById(id);
     }
 

@@ -1,6 +1,7 @@
 package com.dailycodework.gumiho_shops.controller;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +19,7 @@ import com.dailycodework.gumiho_shops.service.cart.ICartItemService;
 import com.dailycodework.gumiho_shops.service.cart.ICartService;
 import com.dailycodework.gumiho_shops.service.user.IUserService;
 
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PutMapping;
 
@@ -34,13 +36,16 @@ public class CartItemController {
             @RequestParam Long productId,
             @RequestParam Integer quantity) {
         try {
-            User user = userService.getUserById(5L);
+            // User user = userService.getUserById(3L);
+            User user = userService.getAuthenticatedUser();
             Cart cart = cartService.initializeNewCart(user);
 
             cartItemService.addItemToCart(cart.getId(), productId, quantity);
             return ResponseEntity.ok(new ApiResponse("Add item success", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        } catch (JwtException e) {
+            return ResponseEntity.status(UNAUTHORIZED).body(new ApiResponse(e.getMessage(), null));
         }
 
     }

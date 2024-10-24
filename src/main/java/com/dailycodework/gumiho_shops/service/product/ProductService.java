@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.dailycodework.gumiho_shops.dto.ImageDto;
 import com.dailycodework.gumiho_shops.dto.ProductDto;
+import com.dailycodework.gumiho_shops.exception.AlreadyExistingException;
 import com.dailycodework.gumiho_shops.exception.ProductNotFoundException;
 import com.dailycodework.gumiho_shops.model.Category;
 import com.dailycodework.gumiho_shops.model.Image;
@@ -35,6 +36,13 @@ public class ProductService implements IProductService {
         // if Yes , set it as the new product category
         // if No , then save it as new category
         // then set as the new product category
+        if (productExists(product.getName(), product.getBrand())) {
+            throw new AlreadyExistingException(
+                    product.getBrand() +
+                            " " +
+                            product.getName() +
+                            " aready exists! , You may update product instead!");
+        }
 
         Category category = Optional.ofNullable(
                 categoryRepository.findByName(product.getCategory().getName()))
@@ -45,6 +53,10 @@ public class ProductService implements IProductService {
                         });
         product.setCategory(category);
         return productRepository.save(createProduct(product, category));
+    }
+
+    private boolean productExists(String name, String brand) {
+        return productRepository.existsByNameAndBrand(name, brand);
     }
 
     private Product createProduct(ProductRequest request, Category category) {

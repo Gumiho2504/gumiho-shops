@@ -1,5 +1,6 @@
 package com.dailycodework.gumiho_shops.controller;
 
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dailycodework.gumiho_shops.dto.ProductDto;
+import com.dailycodework.gumiho_shops.exception.AlreadyExistingException;
 import com.dailycodework.gumiho_shops.exception.ResourceNotFoundException;
 import com.dailycodework.gumiho_shops.model.Product;
 import com.dailycodework.gumiho_shops.request.product.ProductRequest;
@@ -65,8 +67,8 @@ public class ProductController {
             Product addProduct = productService.addProduct(product);
             ProductDto productDto = productService.convertToDto(addProduct);
             return ResponseEntity.ok(new ApiResponse("add product success!", productDto));
-        } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        } catch (AlreadyExistingException e) {
+            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
         }
 
     }

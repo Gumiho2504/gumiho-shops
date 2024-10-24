@@ -13,6 +13,8 @@ import com.dailycodework.gumiho_shops.service.product.IProductService;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Optional;
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -29,13 +31,14 @@ public class CartItemService implements ICartItemService {
         Cart cart = cartService.getCartById(cartId);
         // get the product
         Product product = productService.getProductById(productId);
-        // check if the product already in the cart
-        CartItem cartItem = cart.getItems().stream()
-                .filter(item -> item.getProduct().getId().equals(productId))
-                .findFirst().orElse(new CartItem());
 
-        // if yes increase the quantity with the requested quantity
-        // if no the initiate a new CartItem entry.
+        // check if the product already in the cart
+        CartItem cartItem = Optional.ofNullable(cart.getItems()) // Check if cart.getItems() is null
+                .orElse(Collections.emptySet()) // Return empty set if null
+                .stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst()
+                .orElse(new CartItem());
 
         if (cartItem.getId() == null) {
             cartItem.setCart(cart);

@@ -2,6 +2,7 @@ package com.dailycodework.gumiho_shops.data;
 
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.dailycodework.gumiho_shops.model.User;
@@ -14,6 +15,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class DataInitializer implements ApplicationListener {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
@@ -30,7 +32,7 @@ public class DataInitializer implements ApplicationListener {
             user.setFirstName("Gumiho");
             user.setLastName("-" + i);
             user.setEmail(email);
-            user.setPassword("123456");
+            user.setPassword(passwordEncoder.encode("123456"));
             userRepository.save(user);
             System.out.println("user - " + i + "create user success!");
         }

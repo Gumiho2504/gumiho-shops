@@ -7,7 +7,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,17 +32,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("${api.prefix}/products")
 @RequiredArgsConstructor
+@EnableMethodSecurity(prePostEnabled = true)
 public class ProductController {
 
     private final IProductService productService;
-
-    // public ProductController(IProductService iProductService){
-    // this.productService = productService;
-    // }
-    @GetMapping("/-")
-    public String getMethodName() {
-        return "Hello";
-    }
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAllProduct() {
@@ -61,8 +55,10 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> addProduct(@RequestBody ProductRequest product) {
+        System.out.println("add");
         try {
             Product addProduct = productService.addProduct(product);
             ProductDto productDto = productService.convertToDto(addProduct);
@@ -73,6 +69,7 @@ public class ProductController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/product/{id}/update")
     public ResponseEntity<ApiResponse> updateProduct(@RequestBody ProductRequest request, @PathVariable Long id) {
         try {
@@ -84,6 +81,7 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/product/{id}/delete")
     public ResponseEntity<ApiResponse> deleteProduct(@PathVariable Long id) {
         try {
